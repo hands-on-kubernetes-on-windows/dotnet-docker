@@ -52,6 +52,17 @@ namespace aspnetapp
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            var pathBase = Environment.GetEnvironmentVariable("ASPNETCORE_PATHBASE");
+            if (!string.IsNullOrWhiteSpace(pathBase))
+            {
+                app.UsePathBase(pathBase);
+                app.Use((context, next) =>
+                {
+                    context.Request.PathBase = new PathString(pathBase);
+                    return next();
+                });
+            }
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
